@@ -7,6 +7,9 @@ Addon for uploading files in HTML5 on Godot 4.
 </p>
 
 ## Usage
+
+> **Important!** FileAccessWeb working only for HTML5 (web) export! Please check your project settings before use. In other cases, the addon does not work and push errors when using it.
+
 Create `FileAccessWeb` object and open input dialog window:
 
 ```gdscript
