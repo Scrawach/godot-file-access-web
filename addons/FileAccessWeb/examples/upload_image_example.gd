@@ -1,4 +1,4 @@
-class_name FileAccessWebImageExample
+class_name UploadImageExample
 extends Control
 
 @onready var upload_button: Button = %"Upload Button" as Button

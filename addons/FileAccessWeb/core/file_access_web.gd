@@ -1,13 +1,14 @@
 class_name FileAccessWeb
 extends RefCounted
 
+signal load_started()
 signal loaded(file_type: String, base64_data: String)
 signal progress(current_bytes: int, total_bytes: int)
-signal canceled()
 signal error()
 
 var _file_uploading: JavaScriptObject
 
+var _on_file_load_start_callback: JavaScriptObject
 var _on_file_loaded_callback: JavaScriptObject
 var _on_file_progress_callback: JavaScriptObject
 var _on_file_error_callback: JavaScriptObject
@@ -20,10 +21,12 @@ func _init() -> void:
 	JavaScriptBridge.eval(js_source_code, true)
 	_file_uploading = JavaScriptBridge.get_interface("godotFileAccessWeb")
 	
+	_on_file_load_start_callback = JavaScriptBridge.create_callback(_on_file_load_start)
 	_on_file_loaded_callback = JavaScriptBridge.create_callback(_on_file_loaded)
 	_on_file_progress_callback = JavaScriptBridge.create_callback(_on_file_progress)
 	_on_file_error_callback = JavaScriptBridge.create_callback(_on_file_error)
 	
+	_file_uploading.setLoadStartCallback(_on_file_load_start_callback)
 	_file_uploading.setLoadedCallback(_on_file_loaded_callback)
 	_file_uploading.setProgressCallback(_on_file_progress_callback)
 	_file_uploading.setErrorCallback(_on_file_error_callback)
@@ -42,6 +45,9 @@ func _is_not_web() -> bool:
 func _notify_error() -> void:
 	push_error("File Access Web worked only for HTML5 platform export!")
 
+func _on_file_load_start(args: Array) -> void:
+	load_started.emit()
+
 func _on_file_loaded(args: Array) -> void:
 	var splitted_args: PackedStringArray = args[0].split(",", true, 1)
 	var file_type: String = splitted_args[0].get_slice(":", 1). get_slice(";", 0)
@@ -53,7 +59,7 @@ func _on_file_progress(args: Array) -> void:
 	var total_bytes: int = args[1]
 	progress.emit(current_bytes, total_bytes)
 
-func _on_file_error() -> void:
+func _on_file_error(args: Array) -> void:
 	error.emit()
 
 const js_source_code = """
@@ -61,6 +67,7 @@ function godotFileAccessWebStart() {
 	var loadedCallback;
 	var progressCallback;
 	var errorCallback;
+	var loadStartCallback;
 
 	var input = document.createElement("input");
 	input.setAttribute("type", "file")
@@ -69,15 +76,20 @@ function godotFileAccessWebStart() {
 		setLoadedCallback: (loaded) => loadedCallback = loaded,
 		setProgressCallback: (progress) => progressCallback = progress,
 		setErrorCallback: (error) => errorCallback = error,
+		setLoadStartCallback: (start) => loadStartCallback = start,
 
 		setAcceptFiles: (files) => input.setAttribute("accept", files),
 		open: () => input.click()
 	}
-
+	
 	input.onchange = (event) => {
 		var file = event.target.files[0];
 		var reader = new FileReader();
 		reader.readAsDataURL(file)
+
+		reader.onloadstart = (loadStartEvent) => {
+			loadStartCallback();
+		}
 
 		reader.onload = (readerEvent) => {
 			if (readerEvent.target.readyState === FileReader.DONE) {
