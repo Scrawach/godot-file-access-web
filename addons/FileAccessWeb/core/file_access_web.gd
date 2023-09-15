@@ -3,11 +3,13 @@ extends RefCounted
 
 signal loaded(file_type: String, raw_data: PackedByteArray)
 signal progress(current_bytes: int, total_bytes: int)
+signal error()
 
 var _file_uploading: JavaScriptObject
 
 var _on_file_loaded_callback: JavaScriptObject
 var _on_file_progress_callback: JavaScriptObject
+var _on_file_error_callback: JavaScriptObject
 
 func _init() -> void:
 	if _is_not_web():
@@ -19,9 +21,11 @@ func _init() -> void:
 	
 	_on_file_loaded_callback = JavaScriptBridge.create_callback(_on_file_loaded)
 	_on_file_progress_callback = JavaScriptBridge.create_callback(_on_file_progress)
+	_on_file_error_callback = JavaScriptBridge.create_callback(_on_file_error)
 	
 	_file_uploading.setLoadedCallback(_on_file_loaded_callback)
 	_file_uploading.setProgressCallback(_on_file_progress_callback)
+	_file_uploading.setErrorCallback(_on_file_error_callback)
 
 func open(accept_files: String = "*") -> void:
 	if _is_not_web():
@@ -49,10 +53,14 @@ func _on_file_progress(args: Array) -> void:
 	var total_bytes: int = args[1]
 	progress.emit(current_bytes, total_bytes)
 
+func _on_file_error() -> void:
+	error.emit()
+
 const js_source_code = """
 function godotFileAccessWebStart() {
 	var loadedCallback;
 	var progressCallback;
+	var errorCallback;
 
 	var input = document.createElement("input");
 	input.setAttribute("type", "file")
@@ -60,6 +68,7 @@ function godotFileAccessWebStart() {
 	var interface = {
 		setLoadedCallback: (loaded) => loadedCallback = loaded,
 		setProgressCallback: (progress) => progressCallback = progress,
+		setErrorCallback: (error) => errorCallback = error,
 
 		setAcceptFiles: (files) => input.setAttribute("accept", files),
 		open: () => input.click()
@@ -74,7 +83,7 @@ function godotFileAccessWebStart() {
 		var reader = new FileReader();
 		reader.readAsDataURL(file)
 
-		reader.onloadend = (readerEvent) => {
+		reader.onload = (readerEvent) => {
 			if (readerEvent.target.readyState === FileReader.DONE) {
 				loadedCallback(readerEvent.target.result);
 			}
@@ -83,6 +92,10 @@ function godotFileAccessWebStart() {
 		reader.onprogress = (progressEvent) => {
 			if (progressEvent.lengthComputable)
 				progressCallback(progressEvent.loaded, progressEvent.total);
+		}
+
+		reader.onerror = (errorEvent) => {
+			errorCallback()
 		}
 	}
 
