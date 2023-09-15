@@ -61,4 +61,4 @@ func _on_progress(current_bytes: int, total_bytes: int) -> void:
   # do something...
 ```
 
-A detailed example can be found in [upload image example](/addons/FileAccessWeb/examples/upload_image_example.gd).
+A detailed example can be found in [upload image example](/addons/FileAccessWeb/examples/upload_image_example.gd) or [upload file example](/addons/FileAccessWeb/examples/upload_file_example.gd).
