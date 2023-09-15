@@ -6,6 +6,10 @@ Addon for uploading files in HTML5 on Godot 4.
   <img width="600" src="docs/example.gif" alt="Example">
 </p>
 
+<p align="center">
+  (from <a href="/addons/FileAccessWeb/examples/file_access_web_image_example.gd">image upload example</a>.)
+</p>
+
 ## Usage
 
 > **Important!** FileAccessWeb working only for HTML5 (web) export! Please check your project settings before use. In other cases, the addon does not work and push errors when using it.
