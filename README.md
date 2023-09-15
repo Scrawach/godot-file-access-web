@@ -7,7 +7,7 @@ Addon for uploading files in HTML5 on Godot 4.
 </p>
 
 <p align="center">
-  (from <a href="/addons/FileAccessWeb/examples/upload_image_example.gd">image upload example</a>.)
+  (from <a href="/addons/FileAccessWeb/examples/upload_image_example.gd">upload image example</a>.)
 </p>
 
 ## Usage
@@ -61,4 +61,4 @@ func _on_progress(current_bytes: int, total_bytes: int) -> void:
   # do something...
 ```
 
-A detailed example can be found in [image upload example](/addons/FileAccessWeb/examples/upload_image_example.gd).
+A detailed example can be found in [upload image example](/addons/FileAccessWeb/examples/upload_image_example.gd).
