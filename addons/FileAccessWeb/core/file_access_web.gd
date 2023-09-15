@@ -1,8 +1,9 @@
 class_name FileAccessWeb
 extends RefCounted
 
-signal loaded(file_type: String, raw_data: PackedByteArray)
+signal loaded(file_type: String, base64_data: String)
 signal progress(current_bytes: int, total_bytes: int)
+signal canceled()
 signal error()
 
 var _file_uploading: JavaScriptObject
@@ -45,8 +46,7 @@ func _on_file_loaded(args: Array) -> void:
 	var splitted_args: PackedStringArray = args[0].split(",", true, 1)
 	var file_type: String = splitted_args[0].get_slice(":", 1). get_slice(";", 0)
 	var base64_data: String = splitted_args[1]
-	var raw_data: PackedByteArray = Marshalls.base64_to_raw(base64_data)
-	loaded.emit(file_type, raw_data)
+	loaded.emit(file_type, base64_data)
 
 func _on_file_progress(args: Array) -> void:
 	var current_bytes: int = args[0]
@@ -75,10 +75,6 @@ function godotFileAccessWebStart() {
 	}
 
 	input.onchange = (event) => {
-		if (event.target.files.length === 0) {
-			return;
-		}
-
 		var file = event.target.files[0];
 		var reader = new FileReader();
 		reader.readAsDataURL(file)
@@ -95,7 +91,7 @@ function godotFileAccessWebStart() {
 		}
 
 		reader.onerror = (errorEvent) => {
-			errorCallback()
+			errorCallback();
 		}
 	}
 

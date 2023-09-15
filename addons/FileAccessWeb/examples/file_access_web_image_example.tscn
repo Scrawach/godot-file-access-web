@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bjeu7kpe7vi6g"]
+[gd_scene load_steps=12 format=3 uid="uid://bjeu7kpe7vi6g"]
 
 [ext_resource type="Script" path="res://addons/FileAccessWeb/examples/file_access_web_image_example.gd" id="1_ysa8v"]
 
@@ -37,6 +37,19 @@ bg_color = Color(0.372549, 0.372549, 0.372549, 1)
 draw_center = false
 
 [sub_resource type="ImageTexture" id="ImageTexture_yurbi"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t5wel"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yx3xo"]
+bg_color = Color(0.196078, 0.396078, 0.721569, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fwgxq"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
 
 [node name="File Access Web Image Example" type="Control"]
 layout_mode = 3
@@ -116,3 +129,22 @@ layout_mode = 2
 size_flags_vertical = 3
 texture = SubResource("ImageTexture_yurbi")
 expand_mode = 3
+
+[node name="Progress Bar" type="ProgressBar" parent="Window Background"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 0
+offset_top = 265.0
+offset_right = 256.0
+offset_bottom = 292.0
+theme_override_styles/background = SubResource("StyleBoxFlat_t5wel")
+theme_override_styles/fill = SubResource("StyleBoxFlat_yx3xo")
+
+[node name="Borders" type="Panel" parent="Window Background/Progress Bar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fwgxq")

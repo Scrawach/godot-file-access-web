@@ -3,18 +3,25 @@ extends Control
 
 @onready var upload_button: Button = %"Upload Button" as Button
 @onready var canvas: TextureRect = %Canvas as TextureRect
+@onready var progress: ProgressBar = %"Progress Bar" as ProgressBar
 
 var file_access_web: FileAccessWeb = FileAccessWeb.new()
 
 func _ready() -> void:
 	upload_button.pressed.connect(_on_upload_pressed)
 	file_access_web.loaded.connect(_on_file_loaded)
+	file_access_web.progress.connect(_on_progress)
 
 func _on_upload_pressed() -> void:
 	file_access_web.open("image/png")
 
-func _on_file_loaded(type: String, data: PackedByteArray) -> void:
-	raw_draw(type, data)
+func _on_progress(current_bytes: int, total_bytes: int) -> void:
+	var percentage: float = float(current_bytes) / float(total_bytes) * 100
+	progress.value = percentage
+
+func _on_file_loaded(type: String, base64_data: String) -> void:
+	var raw_data: PackedByteArray = Marshalls.base64_to_raw(base64_data)
+	raw_draw(type, raw_data)
 
 func raw_draw(type: String, data: PackedByteArray) -> void:
 	var image := Image.new()
