@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://bjeu7kpe7vi6g"]
 
-[ext_resource type="Script" path="res://addons/FileAccessWeb/examples/file_access_web_image_example.gd" id="1_ysa8v"]
+[ext_resource type="Script" path="res://addons/FileAccessWeb/examples/upload_image_example.gd" id="1_f62sm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3h46t"]
 bg_color = Color(0, 0, 0, 1)
@@ -51,14 +51,14 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 
-[node name="File Access Web Image Example" type="Control"]
+[node name="Upload Image Example" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_ysa8v")
+script = ExtResource("1_f62sm")
 
 [node name="Window Background" type="Panel" parent="."]
 layout_mode = 1
