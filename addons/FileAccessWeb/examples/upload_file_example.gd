@@ -14,20 +14,21 @@ func _ready() -> void:
 	file_access_web.progress.connect(_on_progress)
 	file_access_web.error.connect(_on_error)
 
-func _on_file_load_started() -> void:
+func _on_file_load_started(file_name: String) -> void:
 	progress.visible = true;
 	success_label.visible = false;
 
 func _on_upload_pressed() -> void:
-	file_access_web.open()
+	file_access_web.open(".png")
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
 	progress.value = percentage
 
-func _on_file_loaded(type: String, base64_data: String) -> void:
+func _on_file_loaded(file_name: String, type: String, base64_data: String) -> void:
 	progress.visible = false;
 	success_label.visible = true;
 
 func _on_error() -> void:
 	push_error("Error!")
+

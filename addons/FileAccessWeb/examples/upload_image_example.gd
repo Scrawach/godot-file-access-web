@@ -19,7 +19,7 @@ func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
 	progress.value = percentage
 
-func _on_file_loaded(type: String, base64_data: String) -> void:
+func _on_file_loaded(file_name: String, type: String, base64_data: String) -> void:
 	var raw_data: PackedByteArray = Marshalls.base64_to_raw(base64_data)
 	raw_draw(type, raw_data)
 
@@ -47,3 +47,4 @@ func _create_texture_from(image: Image) -> ImageTexture:
 	var texture = ImageTexture.new()
 	texture.set_image(image)
 	return texture
+

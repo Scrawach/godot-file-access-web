@@ -1,8 +1,8 @@
 class_name FileAccessWeb
 extends RefCounted
 
-signal load_started()
-signal loaded(file_type: String, base64_data: String)
+signal load_started(file_name: String)
+signal loaded(file_name: String, file_type: String, base64_data: String)
 signal progress(current_bytes: int, total_bytes: int)
 signal error()
 
@@ -31,7 +31,7 @@ func _init() -> void:
 	_file_uploading.setProgressCallback(_on_file_progress_callback)
 	_file_uploading.setErrorCallback(_on_file_error_callback)
 
-func open(accept_files: String = "*") -> void:
+func open(accept_files: String = "*", is_validation_required: bool = false) -> void:
 	if _is_not_web():
 		_notify_error()
 		return
@@ -46,13 +46,15 @@ func _notify_error() -> void:
 	push_error("File Access Web worked only for HTML5 platform export!")
 
 func _on_file_load_start(args: Array) -> void:
-	load_started.emit()
+	var file_name: String = args[0]
+	load_started.emit(file_name)
 
 func _on_file_loaded(args: Array) -> void:
-	var splitted_args: PackedStringArray = args[0].split(",", true, 1)
+	var file_name: String = args[0]
+	var splitted_args: PackedStringArray = args[1].split(",", true, 1)
 	var file_type: String = splitted_args[0].get_slice(":", 1). get_slice(";", 0)
 	var base64_data: String = splitted_args[1]
-	loaded.emit(file_type, base64_data)
+	loaded.emit(file_name, file_type, base64_data)
 
 func _on_file_progress(args: Array) -> void:
 	var current_bytes: int = args[0]
@@ -84,16 +86,17 @@ function godotFileAccessWebStart() {
 	
 	input.onchange = (event) => {
 		var file = event.target.files[0];
+		
 		var reader = new FileReader();
 		reader.readAsDataURL(file)
 
 		reader.onloadstart = (loadStartEvent) => {
-			loadStartCallback();
+			loadStartCallback(file.name);
 		}
 
 		reader.onload = (readerEvent) => {
 			if (readerEvent.target.readyState === FileReader.DONE) {
-				loadedCallback(readerEvent.target.result);
+				loadedCallback(file.name, readerEvent.target.result);
 			}
 		}
 		
@@ -112,3 +115,4 @@ function godotFileAccessWebStart() {
 
 var godotFileAccessWeb = godotFileAccessWebStart();
 """
+
