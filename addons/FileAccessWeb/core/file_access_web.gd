@@ -31,7 +31,7 @@ func _init() -> void:
 	_file_uploading.setProgressCallback(_on_file_progress_callback)
 	_file_uploading.setErrorCallback(_on_file_error_callback)
 
-func open(accept_files: String = "*", is_validation_required: bool = false) -> void:
+func open(accept_files: String = "*") -> void:
 	if _is_not_web():
 		_notify_error()
 		return
