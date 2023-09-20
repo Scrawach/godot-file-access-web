@@ -44,7 +44,7 @@ func _ready() -> void:
   file_access_web.loaded.connect(on_file_loaded)
   file_access_web.open(".jpg")
 
-func _on_file_loaded(file_type: String, base64_data: String) -> void:
+func _on_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
   # do something...
 ```
 
