@@ -6,6 +6,7 @@ extends Control
 @onready var progress: ProgressBar = %"Progress Bar" as ProgressBar
 
 var file_access_web: FileAccessWeb = FileAccessWeb.new()
+var image_type: String = ".jpg"
 
 func _ready() -> void:
 	upload_button.pressed.connect(_on_upload_pressed)
@@ -13,7 +14,7 @@ func _ready() -> void:
 	file_access_web.progress.connect(_on_progress)
 
 func _on_upload_pressed() -> void:
-	file_access_web.open(".jpg")
+	file_access_web.open(image_type)
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
