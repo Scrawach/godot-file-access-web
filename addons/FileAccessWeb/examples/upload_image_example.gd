@@ -12,9 +12,13 @@ func _ready() -> void:
 	upload_button.pressed.connect(_on_upload_pressed)
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_progress)
+	file_access_web.upload_cancelled.connect(_on_upload_cancelled)
 
 func _on_upload_pressed() -> void:
 	file_access_web.open(image_type)
+
+func _on_upload_cancelled() -> void:
+	print("user cancelled the file upload")
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100

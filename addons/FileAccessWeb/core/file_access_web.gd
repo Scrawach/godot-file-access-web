@@ -5,6 +5,7 @@ signal load_started(file_name: String)
 signal loaded(file_name: String, file_type: String, base64_data: String)
 signal progress(current_bytes: int, total_bytes: int)
 signal error()
+signal upload_cancelled()
 
 var _file_uploading: JavaScriptObject
 
@@ -12,6 +13,7 @@ var _on_file_load_start_callback: JavaScriptObject
 var _on_file_loaded_callback: JavaScriptObject
 var _on_file_progress_callback: JavaScriptObject
 var _on_file_error_callback: JavaScriptObject
+var _on_file_cancelled_callback: JavaScriptObject
 
 func _init() -> void:
 	if _is_not_web():
@@ -25,11 +27,13 @@ func _init() -> void:
 	_on_file_loaded_callback = JavaScriptBridge.create_callback(_on_file_loaded)
 	_on_file_progress_callback = JavaScriptBridge.create_callback(_on_file_progress)
 	_on_file_error_callback = JavaScriptBridge.create_callback(_on_file_error)
+	_on_file_cancelled_callback = JavaScriptBridge.create_callback(_on_file_cancelled)
 	
 	_file_uploading.setLoadStartCallback(_on_file_load_start_callback)
 	_file_uploading.setLoadedCallback(_on_file_loaded_callback)
 	_file_uploading.setProgressCallback(_on_file_progress_callback)
 	_file_uploading.setErrorCallback(_on_file_error_callback)
+	_file_uploading.setCancelledCallback(_on_file_cancelled_callback)
 
 func open(accept_files: String = "*") -> void:
 	if _is_not_web():
@@ -64,21 +68,26 @@ func _on_file_progress(args: Array) -> void:
 func _on_file_error(args: Array) -> void:
 	error.emit()
 
+func _on_file_cancelled(args: Array) -> void:
+	upload_cancelled.emit()
+
 const js_source_code = """
 function godotFileAccessWebStart() {
 	var loadedCallback;
 	var progressCallback;
 	var errorCallback;
 	var loadStartCallback;
+	var cancelledCallback;
 
 	var input = document.createElement("input");
-	input.setAttribute("type", "file")
+	input.setAttribute("type", "file");
 
 	var interface = {
 		setLoadedCallback: (loaded) => loadedCallback = loaded,
 		setProgressCallback: (progress) => progressCallback = progress,
 		setErrorCallback: (error) => errorCallback = error,
 		setLoadStartCallback: (start) => loadStartCallback = start,
+		setCancelledCallback: (cancelled) => cancelledCallback = cancelled,
 
 		setAcceptFiles: (files) => input.setAttribute("accept", files),
 		open: () => input.click()
@@ -88,7 +97,7 @@ function godotFileAccessWebStart() {
 		var file = event.target.files[0];
 		
 		var reader = new FileReader();
-		reader.readAsDataURL(file)
+		reader.readAsDataURL(file);
 
 		reader.onloadstart = (loadStartEvent) => {
 			loadStartCallback(file.name);
@@ -109,10 +118,13 @@ function godotFileAccessWebStart() {
 			errorCallback();
 		}
 	}
+	
+	input.addEventListener('cancel', () => {
+		cancelledCallback();
+	});
 
 	return interface;
 }
 
 var godotFileAccessWeb = godotFileAccessWebStart();
 """
-
