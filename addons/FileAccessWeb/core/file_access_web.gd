@@ -80,7 +80,7 @@ function godotFileAccessWebStart() {
 	var cancelledCallback;
 
 	var input = document.createElement("input");
-	input.setAttribute("type", "file")
+	input.setAttribute("type", "file");
 
 	var interface = {
 		setLoadedCallback: (loaded) => loadedCallback = loaded,
@@ -97,7 +97,7 @@ function godotFileAccessWebStart() {
 		var file = event.target.files[0];
 		
 		var reader = new FileReader();
-		reader.readAsDataURL(file)
+		reader.readAsDataURL(file);
 
 		reader.onloadstart = (loadStartEvent) => {
 			loadStartCallback(file.name);
@@ -120,7 +120,7 @@ function godotFileAccessWebStart() {
 	}
 	
 	input.addEventListener('cancel', () => {
-		cancelledCallback("")
+		cancelledCallback();
 	});
 
 	return interface;
